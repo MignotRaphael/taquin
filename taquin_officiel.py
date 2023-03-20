@@ -21,7 +21,6 @@ from copy import deepcopy
 #Rajouter fonction pour choisir son nombre de case
 
 
-nbr=78
 font="helvetica"
 case=5
 dimension=800
