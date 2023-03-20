@@ -5,6 +5,8 @@ from random import randint
 from math import floor
 from copy import deepcopy
 
+#Rajouter fonction pour choisir son nombre de case
+
 
 nbr=78
 font="helvetica"
