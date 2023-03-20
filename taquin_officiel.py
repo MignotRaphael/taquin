@@ -1,9 +1,3 @@
-#########################################################
-#                        Taquin                         #
-#                                                       #
-#                                                       #
-#                                                       #
-#########################################################
 import tkinter as tk
 import threading
 import time
@@ -12,9 +6,9 @@ from math import floor
 from copy import deepcopy
 
 
-
+nbr=56
 font="helvetica"
-case=4
+case=5
 dimension=800
 temps=[0,0]
 mesure_temps=False
