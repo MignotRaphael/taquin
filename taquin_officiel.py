@@ -1,7 +1,8 @@
 ###############################################################
 #                                                             #
 #                             Taquin                          #
-#   Raphaël MIGNOT / Cyprien de SOMMYEVRE / Martin            #
+#                                                             #
+#   Raphaël MIGNOT / Cyprien de SOMMYEVRE / Martin CAUSERO    #
 #                                                             #
 #                                                             #
 #                                                             #
