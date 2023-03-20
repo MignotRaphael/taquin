@@ -1,7 +1,7 @@
 ###############################################################
 #                                                             #
 #                             Taquin                          #
-#             Raphaël MIGNOT/                                 #
+#   Raphaël MIGNOT / Cyprien de SOMMYEVRE / Martin            #
 #                                                             #
 #                                                             #
 #                                                             #
