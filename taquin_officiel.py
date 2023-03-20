@@ -91,7 +91,7 @@ def permutation():
 
 
 
-def mellange():
+def melange():
     global taquin
     x0=0
     y0=0
@@ -130,7 +130,7 @@ def affichage():
 
 def rejouer():
     canvas.delete("all")
-    mellange()
+    melange()
     affichage()
 
 
@@ -166,7 +166,7 @@ titre.grid(column=2,row=1)
 play_again.grid(column=1,row=3)
 quitter.grid(column=1,row=5)
 racine.bind("<Button-1>", clique)
-mellange()
+melange()
 affichage()
 chronometre()
 racine.mainloop()
