@@ -14,8 +14,6 @@ temps=[0,0]
 mesure_temps=False
 
 
-###
-
 taquin=[]
 for i in range (0,case):
     ligne=[]
