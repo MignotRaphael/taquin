@@ -22,7 +22,7 @@ from copy import deepcopy
 
 
 font="helvetica"
-case=5
+case=4
 dimension=800
 temps=[0,0]
 mesure_temps=False
