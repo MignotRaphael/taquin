@@ -6,7 +6,7 @@ from math import floor
 from copy import deepcopy
 
 
-nbr=56
+nbr=78
 font="helvetica"
 case=5
 dimension=800
