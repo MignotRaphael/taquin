@@ -265,7 +265,7 @@ def sort(self):#cette fonction met àjour la valuer de cliquable quand le curseu
 
 racine=tk.Tk()#on crée la fenetre racine, que l'on renomme
 racine.title("Taquin")
-fichier = open("sauvegarde.json","r")#on ouvre le fichier des sauvegardes
+fichier = open("saves.json","r")#on ouvre le fichier des sauvegardes
 str_save=fichier.read()
 str_save=json.loads(str_save)#on recupère le dico stocké dans le json
 fichier.close()
