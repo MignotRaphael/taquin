@@ -246,9 +246,8 @@ def reprendre_coup():#cette fonction permet de revenir en arrière
     global taquin
     global taquin2
     global coup
-    taquin=deepcopy(coup[-2])#on remplace la valuer actuelle du taquin par l'avant dernière valeur ajouté à la liste coup
-    taquin2=deepcopy(coup[-2])#de même pour taquin2
-    coup.pop(-2)#on supprime les deux dernières valeurs ajoutés à la liste coup
+    taquin=deepcopy(coup[-1])#on remplace la valuer actuelle du taquin par l'avant dernière valeur ajouté à la liste coup
+    taquin2=deepcopy(coup[-1])#de même pour taquin2
     coup.pop(-1)
     affichage()
 
