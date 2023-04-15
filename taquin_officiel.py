@@ -11,21 +11,30 @@
 
 
 
+
+
+
+
 import tkinter as tk
-import threading
-import time
 from random import randint
 from math import floor
 from copy import deepcopy
 
+
 #Rajouter fonction pour choisir son nombre de case
 
 
-font="helvetica"
-case=4
-dimension=800
-temps=[0,0]
-mesure_temps=False
+
+
+font="helvetica"  #on definit la police d'ecriture pour l'interface
+case=4            #le nombre de case de notre taquin
+dimension=800     #la longueur en pixel du canevas
+temps=[0,-1]      #la variable stockant le temps s'affichant au chrono
+chr=False         #la variable permettant de connaitre l'état du chronomètre
+
+
+
+
 
 
 taquin=[]
@@ -41,26 +50,9 @@ taquin_resolu=deepcopy(taquin)
 
 
 
-
-def chrono():
-    while mesure_temps==True :
-        print(temps)
-        temps[1]=temps[1]+1
-        time.sleep(1)
-        if temps[1]==60:
-            temps[0]=temps[0]+1
-            temps[1]=0
-        
-
-
-def chronometre():
-    global temps
-    mesure=threading.Thread(target=chrono)
-    mesure.start()
-
-
 def deplacement (x,y):
     global taquin
+    global taquin_resolu
     taquin2=deepcopy(taquin)
     for i in range (0,case):
         for j in range (0,case):
@@ -83,6 +75,9 @@ def deplacement (x,y):
         for i in range (y0,y):
             taquin[i][x]=taquin2[i+1][x]
         taquin[y][x]=0
+    affichage()
+
+
 
 
 
@@ -94,6 +89,9 @@ def permutation():
     while x1==x2 and y1==y2:
         x2,y2=randint(0,case-1),randint(0,case-1)
     taquin[x1][y1],taquin[x2][y2]=taquin[x2][y2],taquin[x1][y1]
+
+
+
 
 
 
@@ -120,24 +118,29 @@ def melange():
 
 
 
-def affichage():
-    canvas.delete("all")
+
+
+
+def affichage():#cette fonction sert à afficher le taquin sur notre canevas
     global taquin
+    global chr
+    global chrono
+    canvas.delete("all")#on commence par retirer tous les éléments présents sur le taquin
     for x in range(0,case):
-        for y in range (0,case):
-            if taquin[y][x]!=0:
-                canvas.create_rectangle(x*(dimension/case), y*(dimension/case),x*(dimension/case)+(dimension/case) , y*(dimension/case)+(dimension/case),fill="white",width=3)
-                canvas.create_text(x*(dimension/case)+(dimension/(case*2)), y*(dimension/case)+(dimension/(case*2)), text = str(taquin[y][x]),font=(font,str(floor(70-case*2+(dimension/200)))))
-    if taquin==taquin_resolu:
-        canvas.create_rectangle(100, 250,700 , 650,fill="white",width=3)
-        canvas.create_text(400, 450, text = "Victoire !",font=(font,"70"))
+        for y in range (0,case):#on parcour le taquin, case par case
+            if taquin[y][x]!=0:#si la case n'est pas la case vide, alors
+                canvas.create_rectangle(x*(dimension/case), y*(dimension/case),x*(dimension/case)+(dimension/case) , y*(dimension/case)+(dimension/case),fill="white",width=3)#dimension/case est égale à la longeur en pixel de chaque case, on place donc un carré blanc aux contours noirs sur chaque case
+                canvas.create_text(x*(dimension/case)+(dimension/(case*2)), y*(dimension/case)+(dimension/(case*2)), text = str(taquin[y][x]),font=(font,str(floor(70-case*2+(dimension/200)))))# on écrit le numéro de chaque case sur le carré, avec une taille de police addapté aux dimensions du taquin
+    if taquin==taquin_resolu: # si le taquin est dans la même configuration que le tquin résolu, alors
+        chr=False#on stop le chrono
+        canvas.create_rectangle(100, 250,700 , 650,fill="white",width=3)#on place un cadre blanc, dans lequel on écrit "Victoire" en indiquant le temps réalisé par le joueur
+        txt=str(temps[0])+":"+str(temps[1])
+        canvas.create_text(400, 450, text = f"Victoire !\n{ txt :^12}",font=(font,"70"))
 
 
 
-def rejouer():
-    canvas.delete("all")
-    melange()
-    affichage()
+
+
 
 
 
@@ -146,33 +149,66 @@ def clique(coord):
         x1=floor(coord.x/(dimension/case))
         y1=floor(coord.y/(dimension/case))
         deplacement(x1,y1)
-        affichage()
+
+
+
+
+
+
+
 
 
 
 
 
 def jeu():
+    global chr
+    global temps
+    temps=[0,-1]
+    canvas.delete("all")
     canvas.grid(column=2,row=2,rowspan=5)
+    chrono.grid(column=3,row=1)
     titre.grid(column=2,row=1)
     play_again.grid(column=1,row=2)
     racine.bind("<Button-1>", clique)
-    mellange()
+    melange()
     affichage()
+    if chr==False:#on déclenche le chrono si et seulement si il n'est pas déja activé
+        chr=True# on indique que le chronon est lancé
+        chronometre()#on démare le chrono
+
+
+
+
+def chronometre():
+    global chr
+    global temps
+    if chr==True: #ssi le chrono est activé
+        temps[1]=temps[1]+1 #temps[1] correspond au nombre de seconde
+        if temps[1]>59:#si on atteint les 60 secondes :
+            temps[0]=temps[0]+1 #temps[0] correspond au nombre de minutes
+            temps[1]=0#on passe le nombre de seconde à 0
+        chrono.config(text=str(temps[0])+":"+str(temps[1]))#on actualise l'afficheur
+        racine.after(1000,chronometre)#on recomence une seconde plus tard
+
+
+
+
+
+
 
 
 racine=tk.Tk()
 racine.title("Taquin")
 titre = tk.Label(racine, text="Taquin", font=(font, "35"))
-play_again =tk.Button(racine, text = "Rejouer",font=(font,"45"),command=rejouer)
+chrono=tk.Label(racine,font=(font,"20"))
+play_again =tk.Button(racine, text = "Rejouer",font=(font,"45"),command=jeu)
 quitter=tk.Button(racine,text="Quitter",font=(font,"20"),command=racine.destroy)
 canvas=tk.Canvas(racine,height=dimension,width=dimension,bg="black")
 canvas.grid(column=2,row=2,rowspan=5)
 titre.grid(column=2,row=1)
 play_again.grid(column=1,row=3)
 quitter.grid(column=1,row=5)
-racine.bind("<Button-1>", clique)
-melange()
-affichage()
-chronometre()
+canvas.bind("<Button-1>", clique)
+jeu()
 racine.mainloop()
