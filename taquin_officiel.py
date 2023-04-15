@@ -18,7 +18,7 @@ from math import floor
 from copy import deepcopy
 from datetime import datetime
 from tkinter import ttk
-
+from pathlib import Path
 
 
 
@@ -30,6 +30,8 @@ chr=False        #la variable permettant de connaitre l'état du chronomètre
 select=0         #variable stockant le nom de la sauvegarde que le joueur veut charger
 coup=[]          #cette liste stocke les configurations précédentes du taquin
 cliquable=0      #cette variable nous indique si la souris survol ou non le canevas
+path= Path(__file__).parent / "files/sauvegarde.json" #on definit le chemin du fichieer sauvegarde.json, dans lequel sont stockées nos sauvegarde
+
 
 taquin=[]
 for i in range (0,case): #cette fonction crée le taquin, organisé dans l'ordre
@@ -178,11 +180,11 @@ def sauvegarde():#cette fonction permet de sauvegarder une partie en cours sur u
     global taquin2
     global coup
     if taquin!=taquin_resolu:#on peut sauvegarder sauf si on a déja gagné
-        fichier = open ("files/sauvegarde.json","r")#on ouvre le fichier contenat les sauvegardes en mode lecture
+        fichier = open (path,"r")#on ouvre le fichier contenat les sauvegardes en mode lecture
         str_save=fichier.read()#on passe le fichier en str
         fichier.close()#on ferme le fichier en lecture
         str_save=json.loads(str_save)#on passe le fichier du str en dico
-        fichier = open ("files/sauvegarde.json","w")#on ouvre le fichier en ecriture
+        fichier = open (path,"w")#on ouvre le fichier en ecriture
         str_save[str(datetime.now())]=[temps,taquin,case,taquin_resolu,taquin2,coup]#on ajoute au  dico la liste contenant le chrono, la variable taquin,taquin 2, taquin resolu, le nombre de cases, et la liste de nos derniers coups, ave comme clé, la date et l'heure à laquelle la sauvegarde est effectuée
         json.dump(str_save,fichier,indent=0)#on sauvegarde le dico au format json et on ferme le fichier
         fichier.close
@@ -206,7 +208,7 @@ def charge():#cette fonction permet de lire une sauvegarde
     global coup
     if taquin!=taquin_resolu:#à condition que l'on est pas déja gagné
         temps=[0,0]
-        fichier = open ("files/sauvegarde.json","r")#on auvre le fichier des sauvegardes
+        fichier = open (path,"r")#on auvre le fichier des sauvegardes
         str_save=fichier.read()
         str_save=json.loads(str_save)#on stock le contenu du fichier au format d'un dico, et on ferme le fichier
         fichier.close()
@@ -224,15 +226,15 @@ def charge():#cette fonction permet de lire une sauvegarde
 def supprimer_sauvegarde():# cette fonction permet de supprimer une sauvegarde sélectionnée
     global select
     if taquin!=taquin_resolu:#on peut supprimer une sauvegarde sauf si on a déja gagné
-        fichier = open ("files/sauvegarde.json","r")#on ouvre le fichier json des sauvegardes
+        fichier = open (path,"r")#on ouvre le fichier json des sauvegardes
         str_save=fichier.read()
         str_save=json.loads(str_save)#on passe le contenu du fichier json au format d'un dictionaire
         fichier.close()
         str_save.pop(select)#on supprime la sauvegarde sélectionnée
-        fichier = open ("files/sauvegarde.json","w")#on ouvre le fichier des sauvegardes
+        fichier = open (path,"w")#on ouvre le fichier des sauvegardes
         json.dump(str_save,fichier,indent=0)#on remplace le contenu du fichier par le dico sans la sauvegarde à supprimer
         fichier.close
-        fichier = open ("files/sauvegarde.json","r")
+        fichier = open (path,"r")
         str_save=fichier.read()
         fichier.close()
         str_save=json.loads(str_save)
@@ -265,7 +267,7 @@ def sort(self):#cette fonction met àjour la valuer de cliquable quand le curseu
 
 racine=tk.Tk()#on crée la fenetre racine, que l'on renomme
 racine.title("Taquin")
-fichier = open ("files/sauvegarde.json","r")#on ouvre le fichier des sauvegardes
+fichier = open ( path,"r")#on ouvre le fichier des sauvegardes
 str_save=fichier.read()
 str_save=json.loads(str_save)#on recupère le dico stocké dans le json
 fichier.close()
