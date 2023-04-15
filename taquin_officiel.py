@@ -44,28 +44,28 @@ taquin2=deepcopy(taquin)#on copie ce taquin dans une variable taquin2
 taquin_resolu=deepcopy(taquin)#on recupère le taquin resolu, pour controler si le joueur a gagner
 
 
-def deplacement (x,y):
+def deplacement (x,y): #cette fonction permet de gérer le déplacement des cases dans le taquin, x et y étant les indices de la case cliquée par le joueur
     global taquin
     global taquin_resolu
-    taquin2=deepcopy(taquin)
-    for i in range (0,case):
+    taquin2=deepcopy(taquin)#on stock dans taquin2 la configuration initiale de taquin
+    for i in range (0,case):#cette boucle permet de localiser la case vide, et d'en stocker les coordonnées x0 et y0
         for j in range (0,case):
             if taquin[j][i]==0:
                 x0=i
                 y0=j
-    if y==y0 and x<x0 :
+    if y==y0 and x<x0 :#le déplacement si la case cliquée et la case vide sont sur la même ligne et la case vide à droite de la case cliquée
         for i in range (x0,x-1,-1):
-            taquin[y][i]=taquin2[y][i-1]
-        taquin[y][x]=0
-    elif y==y0 and x>x0 :
+            taquin[y][i]=taquin2[y][i-1]#toutes les cases de la ligne sont décalées d'une case vers la droite
+        taquin[y][x]=0#on place la case vide sur la case cliquée
+    elif y==y0 and x>x0 :#le déplacement si la case cliquée et la case vide sont sur la même lignee et la case vide à gauche de la case cliquée
         for i in range (x0,x):
             taquin[y][i]=taquin2[y][i+1]
         taquin[y][x]=0
-    elif x==x0 and y<y0:
+    elif x==x0 and y<y0:#le déplacement si la case vide et la case cliquée sont sur la même colonne et la case vide en dessous de la case cliquée
         for i in range (y0,y-1,-1):
             taquin[i][x]=taquin2[i-1][x]
         taquin[y][x]=0
-    elif x==x0 and y>y0:
+    elif x==x0 and y>y0:#le déplacement si la case vide et la case cliquée sont sur la même colonne et la case vide au dessus de la case cliquée
         for i in range (y0,y):
             taquin[i][x]=taquin2[i+1][x]
         taquin[y][x]=0
