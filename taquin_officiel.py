@@ -21,7 +21,6 @@ from tkinter import ttk
 from pathlib import Path
 
 
-
 font="helvetica" #on definit la police d'ecriture pour l'interface
 case=4           #le nombre de case de notre taquin
 dimension=800    #la longueur en pixel du canevas
@@ -142,7 +141,7 @@ def clique(coord):#cette fonction récupère  les coordonnées du clique, et ren
 
 
 
-def jeu():#cette fonction
+def jeu():#cette fonction 
     global chr
     global temps
     global coup
