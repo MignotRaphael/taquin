@@ -1,52 +1,66 @@
+###############################################################
+#                                                             #
+#                             Taquin                          #
+#                                                             #
+#   Raphaël MIGNOT / Cyprien de SOMMYEVRE / Martin CAUSERO    #
+#                                                             #
+#                                                             #
+#                                                             #
+###############################################################
+
+
+
+
+
+
+
+
 import tkinter as tk
 import json
 from random import randint
 from math import floor
 from copy import deepcopy
-
-#Rajouter fonction pour choisir son nombre de case
-
-
-nbr=78
-font="helvetica"
-case=5
-dimension=800
-temps=[0,0]
-mesure_temps=False
-
-
-taquin=[]
-for i in range (0,case):
-    ligne=[]
-    for j in range(0,case):
-        ligne.append(i*case+j+1)
-    taquin.append(ligne)
-taquin[case-1][case-1]=0
-taquin2=deepcopy(taquin)
-taquin_resolu=deepcopy(taquin)
+from datetime import datetime
+from tkinter import ttk
+from pathlib import Path
+from pathlib import __file__
 
 
 
 
-
-def chrono():
-    while mesure_temps==True :
-        print(temps)
-        temps[1]=temps[1]+1
-        time.sleep(1)
-        if temps[1]==60:
-            temps[0]=temps[0]+1
-            temps[1]=0
-        
-
-
-def chronometre():
-    global temps
-    mesure=threading.Thread(target=chrono)
-    mesure.start()
+font="helvetica" #on definit la police d'ecriture pour l'interface
+case=4           #le nombre de case de notre taquin
+dimension=800    #la longueur en pixel du canevas
+temps=[0,-1]     #la variable stockant le temps s'affichant au chrono
+chr=False        #la variable permettant de connaitre l'état du chronomètre
+select=0         #variable stockant le nom de la sauvegarde que le joueur veut charger
+coup=[]          #cette liste stocke les configurations précédentes du taquin
+cliquable=0      #cette variable nous indique si la souris survol ou non le canevas
+path=  "files/sauvegarde.json" #on definit le chemin du fichieer sauvegarde.json, dans lequel sont stockées nos sauvegarde
+taille_damier={"3*3":3,"4*4":4,"5*5":5,"6*6":6,"7*7":7,"8*8":8}#dico servant de liste de valeur à afficher dans les menus déroulants
+taille_fentre={"300*300":300,"500*500":500,"800*800":8}#dico servant de liste de valeur à afficher dans les menus déroulants
 
 
-def deplacement (x,y):
+
+
+def creation_taquin():#cette fonction crée une liste imbriquée servant de taquin, dont les dimensions dépendent de la variable case
+    global taquin
+    global taquin2
+    global taquin_resolu
+    taquin=[]
+    for i in range (0,case):#cette boucle crée le taquin, organisé dans l'ordre
+        ligne=[]
+        for j in range(0,case):
+            ligne.append(i*case+j+1)
+        taquin.append(ligne)
+    taquin[case-1][case-1]=0#on place la case vide
+    taquin2=deepcopy(taquin)#on crée taquin2 en copiant taquin
+    taquin_resolu=deepcopy(taquin)#on crée taquin_resolu, une variable stockant la configuration du taquin resolu
+
+
+
+
+def deplacement (x,y): #cette fonction permet de gérer le déplacement des cases dans le taquin, x et y étant les indices de la case cliquée par le joueur
     global taquin
     global taquin_resolu
     taquin2=deepcopy(taquin)#on stock dans taquin2 la configuration initiale de taquin
@@ -71,6 +85,9 @@ def deplacement (x,y):
         for i in range (y0,y):
             taquin[i][x]=taquin2[i+1][x]
         taquin[y][x]=0
+    affichage()
+
+
 
 
 
@@ -116,6 +133,11 @@ def melange():#cette fonction permet de moélanger le tquin, de telle sorte que 
 
 def affichage():#cette fonction sert à afficher le taquin sur notre canevas
     global taquin
+    global chr
+    global chrono
+    global coup
+    global dimension
+    canvas.delete("all")#on commence par retirer tous les éléments présents sur le taquin
     for x in range(0,case):
         for y in range (0,case):#on parcour le taquin, case par case
             if taquin[y][x]!=0:#si la case n'est pas la case vide, alors
@@ -129,47 +151,265 @@ def affichage():#cette fonction sert à afficher le taquin sur notre canevas
 
 
 
-def rejouer():
-    canvas.delete("all")
-    melange()
-    affichage()
 
 
 
-def clique(coord):
-    if taquin!=taquin_resolu:
-        x1=floor(coord.x/(dimension/case))
-        y1=floor(coord.y/(dimension/case))
-        deplacement(x1,y1)
-        affichage()
+def clique(coord):#cette fonction récupère  les coordonnées du clique, et renvoie la case sur laquelle le joueur a cliqué
+    global taquin
+    global taquin2
+    global coup
+    global cliquable
+    if taquin!=taquin_resolu:#on peut cliquer sauf si le joueur a déja gagné
+        if cliquable==True:#si le curseur survol le canevas
+            x1=floor(coord.x/(dimension/case))#la partie entière de la division des coordonnées par les dimensions d'unu case, donc l'indice de la case dans la variable taquin
+            y1=floor(coord.y/(dimension/case))
+            coup.append(deepcopy(taquin))#on ajoute la configuration actuelle du taquin à la liste des coups précédents
+            deplacement(x1,y1) #on déplace les cases en prenant les indices  de la case cliquée
+    if len(coup)>20:#on limite le nombre de coup enregistrés
+        coup.pop(0)
 
 
 
 
 
-def jeu():
-    canvas.grid(column=2,row=2,rowspan=5)
+
+
+
+def jeu():#cette fonction sert à lancer la partie
+    global chr
+    global temps
+    global coup
+    global case
+    temps=[0,-1]#on reinitialise le chrono
+    canvas.delete("all")#on retire tous les éléments du canevas
+    for widget in racine.winfo_children():#on retire tous les widgets de la fenètre
+        widget.grid_forget()
+    creation_taquin()#on crée le(s) taquin(s)
+    canvas.grid(column=2,row=2,rowspan=5)#on place les éléments nécessaires pour jouer
+    chrono.grid(column=3,row=1)
     titre.grid(column=2,row=1)
     play_again.grid(column=1,row=2)
-    racine.bind("<Button-1>", clique)
-    mellange()
+    Bouton_sauvegarde.grid(column=1,row=1)
+    Bouton_reprendre_coup.grid(column=3,row=2)
+    Bouton_retour.grid(column=1,row=3)
+    canvas.bind("<Button-1>", clique)#on bind le clique gauche sur le canevas
+    melange()#on melange le taquin et on l'affiche
+    affichage()
+    if chr==False:#on lance le chrono si ça n'etait pas encore le cas
+        chr=True
+        chronometre()
+
+
+
+
+
+
+def chronometre():
+    global chr
+    global temps
+    if chr==True: #ssi le chrono est activé
+        temps[1]=temps[1]+1 #temps[1] correspond au nombre de seconde
+        if temps[1]>59:#si on atteint les 60 secondes :
+            temps[0]=temps[0]+1 #temps[0] correspond au nombre de minutes
+            temps[1]=0#on passe le nombre de seconde à 0
+        chrono.config(text=str(temps[0])+":"+str(temps[1]))#on actualise l'afficheur
+        racine.after(1000,chronometre)#on recomence une seconde plus tard
+
+
+
+
+
+
+def sauvegarde():
+    global temps
+    global case
+    global taquin_resolu
+    global taquin2
+    global coup
+    if taquin!=taquin_resolu:#on peut sauvegarder sauf si on a déja gagné
+        fichier = open (path,"r")#on ouvre le fichier contenat les sauvegardes en mode lecture
+        str_save=fichier.read()#on passe le fichier en str
+        fichier.close()#on ferme le fichier en lecture
+        str_save=json.loads(str_save)#on passe le fichier du str en dico
+        fichier = open (path,"w")#on ouvre le fichier en ecriture
+        str_save[str(datetime.now())]=[temps,taquin,case,taquin_resolu,taquin2,coup]#on ajoute au  dico la liste contenant le chrono, la variable taquin,taquin 2, taquin resolu, le nombre de cases, et la liste de nos derniers coups, ave comme clé, la date et l'heure à laquelle la sauvegarde est effectuée
+        json.dump(str_save,fichier,indent=0)#on sauvegarde le dico au format json et on ferme le fichier
+        fichier.close
+        menu_sauvegarde.config(values=list(str_save))#on met à jour le menu deroulant, pour qu'il affiche la nouvelle sauvegarde
+
+
+
+
+
+
+def selec(event):#cette fonction récupère le nom de la sauvegarde sélectionnée
+    global select
+    select=menu_sauvegarde.get()
+
+
+
+
+
+
+def charge():
+    global temps
+    global taquin
+    global taquin2
+    global select
+    global case
+    global taquin_resolu
+    global chr
+    global coup
+    if taquin!=taquin_resolu:
+        jeu()#on relance une partie
+        fichier = open (path,"r")#on auvre le fichier des sauvegardes
+        str_save=fichier.read()
+        str_save=json.loads(str_save)#on stock le contenu du fichier au format d'un dico, et on ferme le fichier
+        fichier.close()
+        temps=str_save[select][0]#on actualise les variables de jeu avec celles stockées dans la sauvegarde
+        taquin=str_save[select][1]
+        case=str_save[select][2]
+        taquin_resolu=str_save[select][3]
+        taquin2=str_save[select][4]
+        coup=str_save[select][5]
+        affichage()#on affiche la partie chargée
+
+
+
+
+
+
+
+
+
+
+def supprimer_sauvegarde():# cette fonction permet de supprimer une sauvegarde sélectionnée
+    global select
+    if taquin!=taquin_resolu:#on peut supprimer une sauvegarde sauf si on a déja gagné
+        fichier = open (path,"r")#on ouvre le fichier json des sauvegardes
+        str_save=fichier.read()
+        str_save=json.loads(str_save)#on passe le contenu du fichier json au format d'un dictionaire
+        fichier.close()
+        str_save.pop(select)#on supprime la sauvegarde sélectionnée
+        fichier = open (path,"w")#on ouvre le fichier des sauvegardes
+        json.dump(str_save,fichier,indent=0)#on remplace le contenu du fichier par le dico sans la sauvegarde à supprimer
+        fichier.close
+        fichier = open (path,"r")
+        str_save=fichier.read()
+        fichier.close()
+        str_save=json.loads(str_save)
+        menu_sauvegarde.config(values=list(str_save))#on met à jour le menu deroulant de sélection des sauvegardes, grace au contenu du fichier json
+
+
+
+
+
+
+
+
+def reprendre_coup():#cette fonction permet de revenir en arrière
+    global taquin
+    global taquin2
+    global coup
+    taquin=deepcopy(coup[-1])#on remplace la valuer actuelle du taquin par la dernière valeur ajouté à la liste coup
+    taquin2=deepcopy(coup[-1])#de même pour taquin2
+    coup.pop(-1)#on supprime la dernière valeur ajouté à la liste coup
     affichage()
 
 
-racine=tk.Tk()
+
+
+def entre(self):#cette fonction met à jour la valuer de cliquable quand le curseur survol sur le canevas
+    global cliquable
+    cliquable=True
+
+
+
+
+def sort(self):#cette fonction met àjour la valuer de cliquable quand le curseur quitte le canevas
+    global cliquable
+    cliquable=False
+
+
+
+
+
+
+def damier(event):#cette fonction récupère la valeur sélectionnée pour le nombre de case du taquin et l'assigne à la variable case
+    global case
+    case=(taille_damier[(menu_damier.get())])
+
+
+def taille(event):#cette fonction récupère la valeur en pixel sélectionnée par le jour et modifie la taille du canevas en conséquence
+    global dimension
+    dimension=(taille_fentre[menu_taille_fenetre.get()])
+    canvas.config(height=dimension,width=dimension)
+
+
+def nouvelle_partie():#cette fonction définie le menu de parametrage de la nouvelle partie
+    for widget in racine.winfo_children():#on retire tous les widgets
+        widget.grid_forget()
+    menu_damier.grid(column=1,row=1,padx=125,pady=50)#on affiche le menu de sélection du nombre de case du taquin
+    Bouton_jouer.grid(column=1,row=2)#on affiche le bouton pour lancer la partie
+    Bouton_retour.grid(column=0,row=3)
+
+
+
+
+def menu_charger_partie():#cette fonction définie le menu de charge d'une sauvegarde
+    for widget in racine.winfo_children():#on retire tous les widgets
+        widget.grid_forget()
+    menu_sauvegarde.grid(column=1,row=1,padx=70,pady=30)#on affiche le menu déroulant affichant les sauvegardes
+    Bouton_charge.grid(column=1,row=2)#on affiche le bouton permettant de charger une sauvegarde
+    Bouton_supprimer_sauvegarde.grid(column=1,row=3,pady=50)#on affiche le bouton permettant de supprimer une sauvegarde
+    Bouton_retour.grid(column=0,row=3)
+
+
+
+
+
+
+def main_menu():#cette fonction définie le menu principal
+    for widget in racine.winfo_children():#on retire tous les widgets
+        widget.grid_forget()
+    titre.grid(column=2,row=0,padx=100)#on place les éléments de l'écran d'acceuil
+    menu_taille_fenetre.grid(column=2,row=3,pady=20)
+    Bouton_comencer_partie.grid(column=2,row=1,pady=20)
+    Bouton_charger_partie.grid(column=2,row=2)
+    quitter.grid(column=2,row=4)
+
+
+
+
+racine=tk.Tk()#on crée la fenetre racine, que l'on renomme
 racine.title("Taquin")
-titre = tk.Label(racine, text="Taquin", font=(font, "35"))
-play_again =tk.Button(racine, text = "Rejouer",font=(font,"45"),command=rejouer)
+fichier = open (path,"r")#on ouvre le fichier des sauvegardes
+str_save=fichier.read()
+str_save=json.loads(str_save)#on recupère le dico stocké dans le json
+fichier.close()
+menu_sauvegarde=ttk.Combobox(racine,values=list(str_save))#on crée le menu deroulant de sélection des sauvegardes, avec le nom des sauvegardes comme valeur affichées
+menu_taille_fenetre=ttk.Combobox(racine,values=["300*300","500*500","800*800"])#on crée le menu déroulant de sélection de la taille de canevas
+menu_damier=ttk.Combobox(racine,values=["3*3","4*4","5*5","6*6","7*7","8*8"])#on crée le mennu deroulant de séclection du nombre de cases du canevas
+titre = tk.Label(racine, text="Taquin", font=(font, "45"))#on crée des labels
+chrono=tk.Label(racine,font=(font,"20"))
+play_again =tk.Button(racine, text = "Rejouer",font=(font,"45"),command=jeu)#on crée des boutons
 quitter=tk.Button(racine,text="Quitter",font=(font,"20"),command=racine.destroy)
-canvas=tk.Canvas(racine,height=dimension,width=dimension,bg="black")
-canvas.grid(column=2,row=2,rowspan=5)
-titre.grid(column=2,row=1)
-play_again.grid(column=1,row=3)
-quitter.grid(column=1,row=5)
-racine.bind("<Button-1>", clique)
-melange()
-affichage()
-chronometre()
+Bouton_sauvegarde=tk.Button(racine,text="sauvegarder", font=(font,"20"),command=sauvegarde)
+Bouton_charge=tk.Button(racine,text="Charger une partie", font=(font,"20"),command=charge)
+Bouton_comencer_partie=tk.Button(racine,text="Nouvelle partie",font=(font,30),command=nouvelle_partie)
+Bouton_charger_partie=tk.Button(racine,text="Charger partie",font=(font,"20"),command=menu_charger_partie)
+Bouton_supprimer_sauvegarde=tk.Button(racine,text="Supprimer sauvegarde",font=(font,"10"),command=supprimer_sauvegarde)
+Bouton_reprendre_coup=tk.Button(racine,text="Reprendre son coup",font=(font,"15"),command=reprendre_coup)
+Bouton_jouer=tk.Button(racine,text="Commencer",font=(font,"30"),command=jeu)
+Bouton_retour=tk.Button(racine,text="<<<",font=(font,"10"),command=main_menu)
+canvas=tk.Canvas(racine,height=dimension,width=dimension,bg="black")#on crée le canevas
+canvas.bind("<Button-1>", clique)#on bind le clique gauche sur le canevas
+canvas.bind("<Enter>", entre)#cess deux binds permettent de s'assurer que le curseur survol le taquin
+canvas.bind("<Leave>", sort)
+menu_sauvegarde.bind("<<ComboboxSelected>>", selec)#ces lignes permettent de détecter la sélection dans les menus déroulants
+menu_taille_fenetre.bind("<<ComboboxSelected>>", taille)
+menu_damier.bind("<<ComboboxSelected>>", damier)
+main_menu()
 racine.mainloop()
 
 
