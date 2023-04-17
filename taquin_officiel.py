@@ -287,20 +287,19 @@ def charge():
 
 def supprimer_sauvegarde():# cette fonction permet de supprimer une sauvegarde sélectionnée
     global select
-    if taquin!=taquin_resolu:#on peut supprimer une sauvegarde sauf si on a déja gagné
-        fichier = open (path,"r")#on ouvre le fichier json des sauvegardes
-        str_save=fichier.read()
-        str_save=json.loads(str_save)#on passe le contenu du fichier json au format d'un dictionaire
-        fichier.close()
-        str_save.pop(select)#on supprime la sauvegarde sélectionnée
-        fichier = open (path,"w")#on ouvre le fichier des sauvegardes
-        json.dump(str_save,fichier,indent=0)#on remplace le contenu du fichier par le dico sans la sauvegarde à supprimer
-        fichier.close
-        fichier = open (path,"r")
-        str_save=fichier.read()
-        fichier.close()
-        str_save=json.loads(str_save)
-        menu_sauvegarde.config(values=list(str_save))#on met à jour le menu deroulant de sélection des sauvegardes, grace au contenu du fichier json
+    fichier = open (path,"r")#on ouvre le fichier json des sauvegardes
+    str_save=fichier.read()
+    str_save=json.loads(str_save)#on passe le contenu du fichier json au format d'un dictionaire
+    fichier.close()
+    str_save.pop(select)#on supprime la sauvegarde sélectionnée
+    fichier = open (path,"w")#on ouvre le fichier des sauvegardes
+    json.dump(str_save,fichier,indent=0)#on remplace le contenu du fichier par le dico sans la sauvegarde à supprimer
+    fichier.close
+    fichier = open (path,"r")
+    str_save=fichier.read()
+    fichier.close()
+    str_save=json.loads(str_save)
+    menu_sauvegarde.config(values=list(str_save))#on met à jour le menu deroulant de sélection des sauvegardes, grace au contenu du fichier json
 
 
 
@@ -352,7 +351,7 @@ def nouvelle_partie():#cette fonction définie le menu de parametrage de la nouv
     for widget in racine.winfo_children():#on retire tous les widgets
         widget.grid_forget()
     menu_damier.grid(column=1,row=1,padx=125,pady=50)#on affiche le menu de sélection du nombre de case du taquin
-    Bouton_jouer.grid(column=1,row=2)#on affiche le bouton pour lancer la partie
+    Bouton_jouer.grid(column=1,row=2,pady=10)#on affiche le bouton pour lancer la partie
     Bouton_retour.grid(column=0,row=3)
 
 
