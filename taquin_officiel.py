@@ -40,7 +40,7 @@ coup=[]          #cette liste stocke les configurations précédentes du taquin
 cliquable=0      #cette variable nous indique si la souris survol ou non le canevas
 path=  "files/sauvegarde.json" #on definit le chemin du fichier sauvegarde.json, dans lequel sont stockées nos sauvegarde
 taille_damier={"3*3":3,"4*4":4,"5*5":5,"6*6":6,"7*7":7,"8*8":8}#dico servant de liste de valeur à afficher dans les menus déroulants
-taille_fentre={"300*300":300,"500*500":500,"800*800":8}#dico servant de liste de valeur à afficher dans les menus déroulants
+taille_fentre={"300*300":300,"500*500":500,"800*800":800}#dico servant de liste de valeur à afficher dans les menus déroulants
 
 
 
