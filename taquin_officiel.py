@@ -27,7 +27,7 @@ from pathlib import __file__
 
 
 
-### On défini les variables globales
+### On défini les variables dont on se servira dans tout le code
 
 
 font="helvetica" #on definit la police d'ecriture pour l'interface
