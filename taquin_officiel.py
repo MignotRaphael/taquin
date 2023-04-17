@@ -95,7 +95,7 @@ def deplacement (x,y): #cette fonction permet de gérer le déplacement des case
 def permutation():#cette fonction permet d'intervertir deux cases aléatoires
     global taquin
     x1,y1=randint(0,case-1),randint(0,case-1)#on choisit une case aléatoirement
-    x2,y2=randint(0,case-1),randint(0,case-1)#on choisit une case aléatoirement
+    x2,y2=randint(0,case-1),randint(0,case-1)#on choisit une autre case aléatoirement
     while x1==x2 and y1==y2:#on s'assure que les deux cases ne sont pas les mêmes
         x2,y2=randint(0,case-1),randint(0,case-1)
     taquin[x1][y1],taquin[x2][y2]=taquin[x2][y2],taquin[x1][y1]#on intervertit les deux cases
@@ -105,7 +105,7 @@ def permutation():#cette fonction permet d'intervertir deux cases aléatoires
 
 
 
-def melange():#cette fonction permet de moélanger le tquin, de telle sorte que la cpnfiguration soit soluble
+def melange():#cette fonction permet de mélanger le taquin, en respectant la solubilité
     global taquin
     x0=0
     y0=0
