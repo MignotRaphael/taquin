@@ -13,7 +13,7 @@
 
 
 
-
+### On importe les bibliothèques
 
 import tkinter as tk
 import json
@@ -27,6 +27,8 @@ from pathlib import __file__
 
 
 
+### On défini les variables globales
+
 
 font="helvetica" #on definit la police d'ecriture pour l'interface
 case=4           #le nombre de case de notre taquin
@@ -36,7 +38,7 @@ chr=False        #la variable permettant de connaitre l'état du chronomètre
 select=0         #variable stockant le nom de la sauvegarde que le joueur veut charger
 coup=[]          #cette liste stocke les configurations précédentes du taquin
 cliquable=0      #cette variable nous indique si la souris survol ou non le canevas
-path=  "files/sauvegarde.json" #on definit le chemin du fichieer sauvegarde.json, dans lequel sont stockées nos sauvegarde
+path=  "files/sauvegarde.json" #on definit le chemin du fichier sauvegarde.json, dans lequel sont stockées nos sauvegarde
 taille_damier={"3*3":3,"4*4":4,"5*5":5,"6*6":6,"7*7":7,"8*8":8}#dico servant de liste de valeur à afficher dans les menus déroulants
 taille_fentre={"300*300":300,"500*500":500,"800*800":8}#dico servant de liste de valeur à afficher dans les menus déroulants
 
